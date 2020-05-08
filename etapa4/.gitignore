@@ -1,6 +1,8 @@
-# Latex
-*.aux
-*.log
+# Spacemeters
+source/*
+__pycache__/*
+*.o
+*sixsV1.1
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
