@@ -15,6 +15,8 @@ from spacemeters import *
 
 import numpy as np
 import matplotlib.pyplot as plt
+# sh('mkdir -p ./build/6SV/1.1')
+# sh('make -C ./build/6SV1.1')
 
 init6SWindows()
 
@@ -80,9 +82,9 @@ xyToCSV(list(wlmesh[len(IRnp)-1]),list(IRnp[len(IRnp)-1]), '../test/plots/IR3ppm
 
 # hostingURL = "http://200.61.170.210:8080/"
 # simURLs = [hostingURL+x for x in simNames]
-# simFile = 'joinedSpectra.csv'
+#
 # wgetData(simURLs, hostingURL)
-
+simFile = 'joinedSpectra.csv'
 simNames = ['spectraplot/1.62_1.7_3ppm_.35atm_100km/CH4,x=3e-6,T=253K,P=.35atm,L=10000000cm,simNum0.csv','spectraplot/1.62_1.7_3ppm_.35atm_100km/CH4,x=3e-6,T=253K,P=.35atm,L=10000000cm,simNum1.csv', 'spectraplot/1.62_1.7_3ppm_.35atm_100km/CH4,x=3e-6,T=253K,P=.35atm,L=10000000cm,simNum2.csv','spectraplot/1.62_1.7_3ppm_.35atm_100km/CH4,x=3e-6,T=253K,P=.35atm,L=10000000cm,simNum3.csv']
 
 joinSpectraPlots(simNames, filename='joinedSpectra.csv')
@@ -121,3 +123,62 @@ print('Energy analisis of methods of absorption')
 print('Power incident at 0ppm:\t\t\t %2.5e [W/m2/sr]' % (PSS))
 print('Power incident at 3ppm:\t\t\t %2.5e [W/m2/sr]' % (P3ppm))
 print('Power incident affected by spectraplt:\t %2.5e [W/m2/sr]' % (integratedModifiedIr))
+
+# %% markdown
+# # Cálculo estilo nuevo
+# %% codecell
+Rearth = 6371e3
+hLEO   = 500e3
+Asens  = .0254**2
+ #(50e-3)*1e-3
+Apx    =  5000**2# 100e3*1e3
+Q = 0.5
+wlMKS = [x * 1e-6 for x in wlSS]
+photonMeanEnergy = h * c / 1.65e-6
+
+intensityAtSat = Apx/(Rearth+hLEO)**2 * Intgrt(wlMKS, irradiance)
+Psens = Asens * intensityAtSat
+print(Psens)
+
+
+_ , aux = listMult(wlMKS, wlMKS, wlMKS, irradiance)
+
+baseAmperage = Q * Asens * Apx * q /h/c/(Rearth + hLEO)**2 * Intgrt( wlMKS, aux  )
+
+deltaAmperage = baseAmperage * 0.01
+print("Intensity at satellite:\t\t %2.4e W/m2" % (intensityAtSat))
+print("Amperage measured:\t\t %2.4e A" % (baseAmperage))
+print("Amperage difference due to CH4:\t %2.4e A" % (deltaAmperage))
+
+# %% markdown
+# # Cálculo Legacy
+# %% codecell
+satelliteAltitude = 500e3 # 500km altitude
+areaLente = 0.0254*0.0254 # Lens area or entering area of the ligth before converging it [m^2]
+areaObsTierra = 5000*5000 # Observed earth area [m^2]
+Pwl = irradianceToPower(irradiance, satelliteAltitude , areaObsTierra , areaLente ) # W/mic
+# Corremos la simulacion
+meanWl = (wl_start + wl_end)/2 * 1e-6
+#Calculations for SNR
+sigma = (meanWl-wl_start*1e-6) /2
+# Vamos a obtener una curva real de quantumEff
+quantumEff = [gaussN(x,meanWl,sigma) * meanWl / 60 for x in wlMKS] #Quantum efficiency [] --> how many photons convert into electrons, it depends on the instrument.
+plt.plot(wlMKS,quantumEff); plt.title('Ejemplo de quantum efficiency');plt.show()
+
+Fmtf = 0.7
+Tp = 0.85
+Tm = 0.9
+
+#photon energy
+
+ePhoton = h*c/(meanWl)
+# Psat in [W/mic],  wl [mic],  quantumEff [%]
+#Simpact
+
+wlMKS, Peff = listMult(wlMKS,Pwl,wlMKS,quantumEff) # Effective power
+plt.plot(wlMKS,Peff);plt.title('Potencia eficaz  [W/mic]')
+ne = Intgrt(wlMKS,Peff) / ePhoton
+print("Se exitan %2.4e electrones" % (ne))
+print("Se genera %2.4e A" % (ne * q))
+# print(Peff)
+Simpact = Intgrt(wlMKS,Peff) * Fmtf * Tp * Tm  / ePhoton
