@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 # sh('mkdir -p ./build/6SV/1.1')
 # sh('make -C ./build/6SV1.1')
 
-init6SWindows()
+# init6SWindows()
 
 wget(hostingURL + 'python/spacemeters6S.py')
 wget(hostingURL + 'python/ABSTRA_template.txt')
@@ -127,7 +127,7 @@ print('Power incident affected by spectraplt:\t %2.5e [W/m2/sr]' % (integratedMo
 # %% markdown
 # # Cálculo estilo nuevo
 # %% codecell
-Rearth = 6371e3
+Rearth = 0#6371e3
 hLEO   = 500e3
 Asens  = .0254**2
  #(50e-3)*1e-3
