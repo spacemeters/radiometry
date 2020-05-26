@@ -1,3 +1,7 @@
+#spacemeters libraries must be obtained from spacemeters/serve
+*spacemeters.py
+*spacemeters6S.py
+
 # Latex
 *.aux
 *.log
