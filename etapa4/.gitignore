@@ -3,7 +3,10 @@ source/*
 __pycache__/*
 *.o
 *sixsV1.1
-
+host.py
+joinedSpectra.csv
+spacemeters.py
+spacemeter6S.py
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

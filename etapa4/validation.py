@@ -9,8 +9,14 @@
 # </style>
 # %% codecell
 # Get Spacemeters module. Update server with # http://200.61.170.210:8080/gitpulloriginmaster
+from wget import *
+from host import *
+print(hostingURL+"\n")
+wget(hostingURL + "python/spacemeters.py")
+wget(hostingURL + "python/spacemeters6S.py")
+wget(hostingURL + "util/Makefile_edited.txt",dir="source")
+wget(hostingURL + "util/ABSTRA_template.txt",dir="source")
 
-hostingURL = "http://200.61.170.210:8080/"
 from spacemeters import *
 
 import numpy as np
@@ -18,10 +24,10 @@ import matplotlib.pyplot as plt
 # sh('mkdir -p ./build/6SV/1.1')
 # sh('make -C ./build/6SV1.1')
 
-# init6SWindows()
+init6SWindows()
 
-wget(hostingURL + 'python/spacemeters6S.py')
-wget(hostingURL + 'python/ABSTRA_template.txt')
+# wget(hostingURL + 'python/spacemeters6S.py')
+# wget(hostingURL + 'python/ABSTRA_template.txt')
 sixSDir = '.\\build\\6SV1.1\\sixsV1.1'
 # %% codecell
 from spacemeters6S import *
@@ -37,7 +43,8 @@ sixS_irradiance_dict = {}
 Nwl = int(np.ceil((wl_end - wl_start)/0.001))
 wlSS = np.linspace(wl_start, wl_end, Nwl)
 for x in chppm:
-  set6SCH4ppm(x)
+  C = concentration(ch4ppm=x)
+  C.set6S(prnt=True)
   s = quickSixS(dir=sixSDir)
   s.wavelength = Wavelength(wl_start, wl_end)
   wlSS, irradiance = SixSHelpers.Wavelengths.run_wavelengths(s,wlSS,output_name="pixel_radiance",verbose=False)
@@ -81,12 +88,13 @@ xyToCSV(list(wlmesh[len(IRnp)-1]),list(IRnp[len(IRnp)-1]), '../test/plots/IR3ppm
 # SPECTRA PLOT ---> L = 10 Km
 
 # hostingURL = "http://200.61.170.210:8080/"
-# simURLs = [hostingURL+x for x in simNames]
+# 
 #
-# wgetData(simURLs, hostingURL)
+# 
 simFile = 'joinedSpectra.csv'
 simNames = ['spectraplot/1.62_1.7_3ppm_.35atm_100km/CH4,x=3e-6,T=253K,P=.35atm,L=10000000cm,simNum0.csv','spectraplot/1.62_1.7_3ppm_.35atm_100km/CH4,x=3e-6,T=253K,P=.35atm,L=10000000cm,simNum1.csv', 'spectraplot/1.62_1.7_3ppm_.35atm_100km/CH4,x=3e-6,T=253K,P=.35atm,L=10000000cm,simNum2.csv','spectraplot/1.62_1.7_3ppm_.35atm_100km/CH4,x=3e-6,T=253K,P=.35atm,L=10000000cm,simNum3.csv']
-
+simURLs = [hostingURL+x for x in simNames]
+wgetData(simURLs, hostingURL)
 joinSpectraPlots(simNames, filename='joinedSpectra.csv')
 
 
