@@ -11,6 +11,7 @@ spacemeter6S.py
 __pycache__/
 *.py[cod]
 *$py.class
+spectraplot/*
 
 # C extensions
 *.so

@@ -135,58 +135,35 @@ print('Power incident affected by spectraplt:\t %2.5e [W/m2/sr]' % (integratedMo
 # %% markdown
 # # Cálculo estilo nuevo
 # %% codecell
-Rearth = 0#6371e3
-hLEO   = 500e3
-Asens  = .0254**2
- #(50e-3)*1e-3
-Apx    =  5000**2# 100e3*1e3
-Q = 0.5
-wlMKS = [x * 1e-6 for x in wlSS]
+Rearth = 6371e3 # [m] unused
+hLEO   = 500e3  # [m] 
+dlens  = 68e-3  # [m]   # GOSAT has 68mm aperture diameter
+Asens  = dlens**2 * pi/4  # [m2] 
+Apx    =  5000**2         # [m2] 
+Q = 0.5  # quantum efficiency of sensor
+
 photonMeanEnergy = h * c / 1.65e-6
 
-intensityAtSat = Apx/(Rearth+hLEO)**2 * Intgrt(wlMKS, irradiance)
+intensityAtSat = Apx/(hLEO)**2 * Intgrt(wlSS, irradiance)
 Psens = Asens * intensityAtSat
 print(Psens)
 
+wlMKS = [x * 1e-6 for x in wlSS] # convert sixS wavelength to [m]
+_ , aux = listMult(wlSS, wlMKS, wlSS, irradiance)
 
-_ , aux = listMult(wlMKS, wlMKS, wlMKS, irradiance)
-
-baseAmperage = Q * Asens * Apx * q /h/c/(Rearth + hLEO)**2 * Intgrt( wlMKS, aux  )
+baseAmperage = Q * Asens * Apx * q /h/c/(Rearth + hLEO)**2 * Intgrt( wlSS, aux  )
 
 deltaAmperage = baseAmperage * 0.01
 print("Intensity at satellite:\t\t %2.4e W/m2" % (intensityAtSat))
 print("Amperage measured:\t\t %2.4e A" % (baseAmperage))
 print("Amperage difference due to CH4:\t %2.4e A" % (deltaAmperage))
 
-# %% markdown
-# # Cálculo Legacy
-# %% codecell
-satelliteAltitude = 500e3 # 500km altitude
-areaLente = 0.0254*0.0254 # Lens area or entering area of the ligth before converging it [m^2]
-areaObsTierra = 5000*5000 # Observed earth area [m^2]
-Pwl = irradianceToPower(irradiance, satelliteAltitude , areaObsTierra , areaLente ) # W/mic
-# Corremos la simulacion
-meanWl = (wl_start + wl_end)/2 * 1e-6
-#Calculations for SNR
-sigma = (meanWl-wl_start*1e-6) /2
-# Vamos a obtener una curva real de quantumEff
-quantumEff = [gaussN(x,meanWl,sigma) * meanWl / 60 for x in wlMKS] #Quantum efficiency [] --> how many photons convert into electrons, it depends on the instrument.
-plt.plot(wlMKS,quantumEff); plt.title('Ejemplo de quantum efficiency');plt.show()
-
 Fmtf = 0.7
 Tp = 0.85
 Tm = 0.9
+# Simpact = Intgrt(wlSS,Peff) * Fmtf * Tp * Tm  / ePhoton
 
-#photon energy
+# quantumEff = [gaussN(x,meanWl,sigma) * meanWl / 60 for x in wlMKS] #Quantum efficiency [] --> how many photons convert into electrons, it depends on the instrument.
+# plt.plot(wlMKS,quantumEff); plt.title('Ejemplo de quantum efficiency');plt.show()
 
-ePhoton = h*c/(meanWl)
-# Psat in [W/mic],  wl [mic],  quantumEff [%]
-#Simpact
 
-wlMKS, Peff = listMult(wlMKS,Pwl,wlMKS,quantumEff) # Effective power
-plt.plot(wlMKS,Peff);plt.title('Potencia eficaz  [W/mic]')
-ne = Intgrt(wlMKS,Peff) / ePhoton
-print("Se exitan %2.4e electrones" % (ne))
-print("Se genera %2.4e A" % (ne * q))
-# print(Peff)
-Simpact = Intgrt(wlMKS,Peff) * Fmtf * Tp * Tm  / ePhoton

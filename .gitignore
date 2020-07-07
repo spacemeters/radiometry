@@ -1,6 +1,8 @@
 #spacemeters libraries must be obtained from spacemeters/serve
+test/plots/*
 *spacemeters.py
 *spacemeters6S.py
+
 
 # Latex
 *.aux
