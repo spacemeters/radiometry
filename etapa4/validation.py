@@ -151,7 +151,7 @@ print(Psens)
 wlMKS = [x * 1e-6 for x in wlSS] # convert sixS wavelength to [m]
 _ , aux = listMult(wlSS, wlMKS, wlSS, irradiance)
 
-baseAmperage = Q * Asens * Apx * q /h/c/(Rearth + hLEO)**2 * Intgrt( wlSS, aux  )
+baseAmperage = Q * Asens * Apx * q /h/c/(hLEO)**2 * Intgrt( wlSS, aux  )
 
 deltaAmperage = baseAmperage * 0.01
 print("Intensity at satellite:\t\t %2.4e W/m2" % (intensityAtSat))
