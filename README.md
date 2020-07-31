@@ -43,11 +43,11 @@ para luego ser usados en la simulación FTS.*
 ---
 Steps to recreate simulations *Pasos a seguir*
 
-1. Run `lightSource/radianceSim.py` with python 3.8
+1. Run `lightSource/simulateRadiance.py` with python 3.8
 
-2. Verify `simulation/Isp.csv` was created by first step
+2. Verify `simulation/Isp.csv` was created by first step *verificar creación del archivo `simulation/Isp.csv`*
 
-3. Run `simulation/ftsSim.py`
+3. Run `simulation/ftsSim.py` to obtain FTS simulation results *Correr dicho archivo para obtener resultados de simulación*
 
 
 

@@ -4,8 +4,8 @@ from wget import *
 import host # ask for host file
 print(host.URL+"\n")
 wget(host.URL + "python/spacemeters.py")
-wget(host.URL + "util/Makefile_edited.txt",dir="source")
-wget(host.URL + "util/ABSTRA_template.txt",dir="source")
+wget(host.URL + "util/Makefile_edited.txt", dir="source")
+wget(host.URL + "util/ABSTRA_template.txt", dir="source")
 
 
 import spacemeters as sm
@@ -25,12 +25,15 @@ sixSDir = ".\\build\\6SV1.1\\sixsV1.1"
 # C0.set6S(prnt=True)
 
 wl_start=.4
-wl_end=.41
+wl_end=3.2
 Dwl = 0.001
 Nwl = int(np.ceil((wl_end - wl_start) / Dwl))
 wlSS = np.linspace(wl_start, wl_end, Nwl) # discretization of studied wavelengths
 
 s = sm.sixs.quickSixS(dir=sixSDir)
+#  Possible Ground Reflectance values defined as constants: `GroundReflectance.GreenVegetation``, ``GroundReflectance.ClearWater``, ``GroundReflectance.Sand`` or ``GroundReflectance.LakeWater``
+# print(GroundReflectance.Sand)
+
 s.wavelength = Wavelength(wl_start, wl_end)  # micrometer  == mic
 wlSS, irradiance = SixSHelpers.Wavelengths.run_wavelengths(s,wlSS,output_name="pixel_radiance",verbose=False)
 irradiance = sm.interpolateNans(wlSS,irradiance)
